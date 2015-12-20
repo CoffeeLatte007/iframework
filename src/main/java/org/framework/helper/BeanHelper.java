@@ -59,6 +59,19 @@ public class BeanHelper {
 
         return (T) BEAN_MAP.get(cls);
     }
+
+    /**
+     * 设置Bean实例，一般来说 对于代理对象的实例 设置就用这个方法
+     * author：Lizhao
+     * Date:15/12/20
+     * version:1.0
+     *
+     * @param cls
+     * @param obj
+     */
+    public static void setBean(Class<?> cls, Object obj) {
+        BEAN_MAP.put(cls, obj);
+    }
 }
 
 

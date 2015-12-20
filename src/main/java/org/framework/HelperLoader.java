@@ -1,9 +1,6 @@
 package org.framework;
 
-import org.framework.helper.BeanHelper;
-import org.framework.helper.ClassHelper;
-import org.framework.helper.ControllerHelper;
-import org.framework.helper.IocHelper;
+import org.framework.helper.*;
 import org.framework.util.ClassUtil;
 
 /**
@@ -15,7 +12,7 @@ import org.framework.util.ClassUtil;
 public class HelperLoader {
     public static void init(){
         Class<?>[] classList={
-          ClassHelper.class,BeanHelper.class,IocHelper.class,ControllerHelper.class
+          ClassHelper.class,BeanHelper.class, AopHelper.class,IocHelper.class,ControllerHelper.class
         };
         //加载其他4个类,并初始化
         for(Class<?> cls:classList){

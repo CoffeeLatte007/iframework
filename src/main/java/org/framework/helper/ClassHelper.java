@@ -8,6 +8,8 @@ import org.framework.util.ClassUtil;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import java.lang.annotation.Annotation;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,8 +23,10 @@ public final class ClassHelper {
     private static final Set<Class<?>> CLASS_SET;
 
     static {
-        //静态块中初始化 CLASS_SET
+
+        // 静态块中初始化 CLASS_SET
         String basePackage = ConfigHelper.getAppBasePackage();
+
         CLASS_SET = ClassUtil.getClassSet(basePackage);
     }
 
@@ -92,6 +96,50 @@ public final class ClassHelper {
         beanClassSet.addAll(getControllerClassSet());
 
         return beanClassSet;
+    }
+
+    /**
+     * 获取某个类下面的所有子类
+     * author：Lizhao
+     * Date:15/12/20
+     * version:1.0
+     *
+     * @param superClass
+     *
+     * @return
+     */
+    public static Set<Class<?>> getClassSetBySuper(Class<?> superClass) {
+        Set<Class<?>> classSet = new HashSet<Class<?>>();
+
+        for (Class<?> cls : CLASS_SET) {
+            if (superClass.isAssignableFrom(cls) &&!superClass.equals(cls)) {
+                classSet.add(cls);
+            }
+        }
+
+        return classSet;
+    }
+
+    /**
+     * 获取应用包名下带有某个注解的所有类
+     * author：Lizhao
+     * Date:15/12/20
+     * version:1.0
+     *
+     * @param annotationClass
+     *
+     * @return
+     */
+    public static Set<Class<?>> getClassSetByAnnotation(Class<? extends Annotation> annotationClass) {
+        Set<Class<?>> classSet = new HashSet<Class<?>>();
+
+        for (Class<?> cls : CLASS_SET) {
+            if (cls.isAnnotationPresent(annotationClass)) {
+                classSet.add(cls);
+            }
+        }
+
+        return classSet;
     }
 }
 

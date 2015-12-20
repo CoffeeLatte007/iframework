@@ -18,6 +18,7 @@
     <commons-collections4.verison>4.0</commons-collections4.verison>
     <commons-dbcp2.version>2.0.1</commons-dbcp2.version>
     <commons-dbutils.version>1.6</commons-dbutils.version>
+    <cglib.version>2.2.2</cglib.version>
     </properties>
     <dependencies>
         <!-- Servlet -->
@@ -26,6 +27,12 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>${servlet.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- CGLib -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>${cglib.version}</version>
         </dependency>
         <!-- JSP -->
         <dependency>
