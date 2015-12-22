@@ -62,7 +62,7 @@ public final class ConfigHelper {
      *
      * @return
      */
-    public static String getJdvcPassword() {
+    public static String getJdbcPassword() {
         return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_PASSWORD);
     }
 

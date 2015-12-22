@@ -2,11 +2,12 @@ package org.framework.helper;
 
 //~--- non-JDK imports --------------------------------------------------------
 
-import org.apache.log4j.spi.LoggerFactory;
 import org.framework.annotation.Aspect;
+import org.framework.annotation.Service;
 import org.framework.proxy.AspectProxy;
 import org.framework.proxy.Proxy;
 import org.framework.proxy.ProxyManager;
+import org.framework.proxy.TransactionProxy;
 import org.slf4j.Logger;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -62,21 +63,55 @@ public class AopHelper {
         return targetClassSet;
     }
 
+
+
     /**
-     * 代理类和目标类的映射关系
+     *目标类和代理对象列表之间的映射关系
      * author：Lizhao
      * Date:15/12/20
      * version:1.0
+     *
+     * @param proxyMap
      *
      * @return
      *
      * @throws Exception
      */
+    public static Map<Class<?>, List<Proxy>> createTargetMap(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {
+        //目标类和代理列表实例映射map
+    Map<Class<?>, List<Proxy>> targetMap = new HashMap<Class<?>, List<Proxy>>();
+    //遍历代理类和目标类的映射Map
+    for (Map.Entry<Class<?>, Set<Class<?>>> proxyEntry : proxyMap.entrySet()) {
+        //代理类
+        Class<?>      proxyClass     = proxyEntry.getKey();
+        //目标集合
+        Set<Class<?>> targetClassSet = proxyEntry.getValue();
+        //遍历目标类集合，每个都加入新的目标map
+        for (Class<?> targetClass : targetClassSet) {
+            //实例化代理类
+            Proxy proxy = (Proxy) proxyClass.newInstance();
+
+            if (targetMap.containsKey(targetClass)) {
+                targetMap.get(targetClass).add(proxy);
+            } else {
+                List<Proxy> proxyList = new ArrayList<Proxy>();
+
+                proxyList.add(proxy);
+                targetMap.put(targetClass, proxyList);
+            }
+        }
+    }
+
+    return targetMap;
+}
     private static Map<Class<?>, Set<Class<?>>> createProxyMap() throws Exception {
-
-        // 代理类和映射类的关系 Map
         Map<Class<?>, Set<Class<?>>> proxyMap = new HashMap<Class<?>, Set<Class<?>>>();
+        addAspectProxy(proxyMap);
+        addTransactionProxy(proxyMap);
+        return proxyMap;
+    }
 
+    private static void addTransactionProxy(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {
         // 获得所有代理类，只要继承了AspectProxy 均为代理类
         Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
 
@@ -93,48 +128,12 @@ public class AopHelper {
                 proxyMap.put(proxyClass, targetClassSet);
             }
         }
-
-        return proxyMap;
     }
 
-    /**
-     *目标类和代理对象列表之间的映射关系
-     * author：Lizhao
-     * Date:15/12/20
-     * version:1.0
-     *
-     * @param proxyMap
-     *
-     * @return
-     *
-     * @throws Exception
-     */
-    public static Map<Class<?>, List<Proxy>> createTargetMap(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {
-        //目标类和代理列表实例映射map
-        Map<Class<?>, List<Proxy>> targetMap = new HashMap<Class<?>, List<Proxy>>();
-        //遍历代理类和目标类的映射Map
-        for (Map.Entry<Class<?>, Set<Class<?>>> proxyEntry : proxyMap.entrySet()) {
-            //代理类
-            Class<?>      proxyClass     = proxyEntry.getKey();
-            //目标集合
-            Set<Class<?>> targetClassSet = proxyEntry.getValue();
-            //遍历目标类集合，每个都加入新的目标map
-            for (Class<?> targetClass : targetClassSet) {
-                //实例化代理类
-                Proxy proxy = (Proxy) proxyClass.newInstance();
+    private static void addAspectProxy(Map<Class<?>, Set<Class<?>>> proxyMap) {
+        Set<Class<?>> serviceClassSet = ClassHelper.getClassSetByAnnotation(Service.class);
+        proxyMap.put(TransactionProxy.class, serviceClassSet);
 
-                if (targetMap.containsKey(targetClass)) {
-                    targetMap.get(targetClass).add(proxy);
-                } else {
-                    List<Proxy> proxyList = new ArrayList<Proxy>();
-
-                    proxyList.add(proxy);
-                    targetMap.put(targetClass, proxyList);
-                }
-            }
-        }
-
-        return targetMap;
     }
 }
 
