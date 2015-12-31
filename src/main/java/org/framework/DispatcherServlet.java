@@ -6,9 +6,7 @@ import org.framework.bean.Data;
 import org.framework.bean.Handler;
 import org.framework.bean.Param;
 import org.framework.bean.View;
-import org.framework.helper.BeanHelper;
-import org.framework.helper.ConfigHelper;
-import org.framework.helper.ControllerHelper;
+import org.framework.helper.*;
 import org.framework.util.*;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -70,6 +68,8 @@ public class DispatcherServlet extends HttpServlet {
         // 忽略所有的静态请求的方法
         ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
         defaultServlet.addMapping(ConfigHelper.getAppAssetPath() + "*");
+        //初始化servletFileUpload
+        UploadHelper.init(servletContext);
 
     }
 
@@ -94,42 +94,32 @@ public class DispatcherServlet extends HttpServlet {
         //获取当前请求所有相关数据
         String requestMethod=request.getMethod().toLowerCase();
         String requestPath=request.getPathInfo();
+        //过滤favicon.ico请求
+        if(requestPath.equals("/favicon.ico")){
+            return;
+        }
         //获取Action 处理器
         Handler handler= ControllerHelper.getHandler(requestMethod,requestPath);
         if(handler!=null){
             //获取Controller类及其Bean类的实例
             Class<?> controllerClass=handler.getControllerClass();
             Object controllerBean= BeanHelper.getBean(controllerClass);
-            //创建请求参数对象
-            Map<String,Object> paramMap=new HashMap<String, Object>();
-            //得到所有参数名字 用于获取post的表单数据
-            Enumeration<String> paramNames =request.getParameterNames();
-            //有重名的参数,后面的把前面的覆盖
-            while (paramNames.hasMoreElements()){
-                String paramName =paramNames.nextElement();
-                String paramValue=request.getParameter(paramName);
-                paramMap.put(paramName,paramValue);
+            Param param;
+            if (UploadHelper.isMultipart(request)) {
+                param = UploadHelper.createParam(request);
+            } else {
+                param = RequestHelper.createParam(request);
             }
-            //getInputStream 获取其他数据
-            String body= CodeUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
-            if(StringUtil.isNotEmpty(body)){
-                String[] params=StringUtil.splitString(body,"&");
-                if(ArrayUtil.isNotEmpty(params)){
-                    for(String param:params){
-                        String[] array=StringUtil.splitString(param,"=");
-                        //每个参数形如a="xxx"
-                        if(ArrayUtil.isNotEmpty(array)&&array.length==2){
-                            String paramName=array[0];
-                            String paramValue=array[1];
-                            paramMap.put(paramName,paramValue);
-                        }
-                    }
-                }
-            }
-            Param param=new Param(paramMap);
+
             //反射调用Action方法
             Method actionMethod=handler.getActionMethod();
-            Object result= ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
+            Object result;
+            //判断Action方法是否有参数
+            if (param.isEmpty()) {
+                result = ReflectionUtil.invokeMethod(controllerBean, actionMethod);
+            } else {
+                result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
+            }
             //处理Action方法返回值
             if(result instanceof View){
                 //返回的是jsp页面

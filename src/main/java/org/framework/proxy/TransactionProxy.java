@@ -25,6 +25,7 @@ public class TransactionProxy implements Proxy {
         Object result;
         boolean flag=FLAG_HOLDER.get();
         Method method=proxyChain.getTargetMethod();
+        //
         if (!flag&&method.isAnnotationPresent(Transaction.class)){
             FLAG_HOLDER.set(true);
             try{

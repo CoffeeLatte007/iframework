@@ -19,6 +19,7 @@
     <commons-dbcp2.version>2.0.1</commons-dbcp2.version>
     <commons-dbutils.version>1.6</commons-dbutils.version>
     <cglib.version>2.2.2</cglib.version>
+    <upload.version>1.3.1</upload.version>
     </properties>
     <dependencies>
         <!-- Servlet -->
@@ -72,6 +73,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+        </dependency>
+        <!-- Apache Commons FileUpload -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${upload.version}</version>
         </dependency>
         <!-- Apache Commons Collections -->
         <dependency>

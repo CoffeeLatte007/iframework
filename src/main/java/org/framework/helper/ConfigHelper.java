@@ -17,6 +17,7 @@ public final class ConfigHelper {
 
     // 得到配置属性
     private static final Properties CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
+    private static int appUploadLimit;
 
     /**
      * 得到Jdbc驱动
@@ -99,6 +100,10 @@ public final class ConfigHelper {
      */
     public static String getAppAssetPath() {
         return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_ASSET_PATH, "/asset/");
+    }
+
+    public static int getAppUploadLimit() {
+        return PropsUtil.getInt(CONFIG_PROPS,ConfigConstant.APP_UPLOAD_LIMIT,10);
     }
 }
 

@@ -57,6 +57,7 @@ public class AopHelper {
 
         // 不为空，或者不是Aspect的注解类都行
         if ((annotation != null) &&!annotation.equals(Aspect.class)) {
+            //获取带有某个注解的所有类 比如说Controller就返回Controller
             targetClassSet.addAll(ClassHelper.getClassSetByAnnotation(annotation));
         }
 
@@ -111,7 +112,14 @@ public class AopHelper {
         return proxyMap;
     }
 
-    private static void addTransactionProxy(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {
+    private static void addTransactionProxy(Map<Class<?>, Set<Class<?>>> proxyMap) {
+        //获取带有Service的所有注解，具体的判断注解的在TransactionProxy中执行
+        Set<Class<?>> serviceClassSet = ClassHelper.getClassSetByAnnotation(Service.class);
+        proxyMap.put(TransactionProxy.class, serviceClassSet);
+    }
+
+    private static void addAspectProxy(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {
+
         // 获得所有代理类，只要继承了AspectProxy 均为代理类
         Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
 
@@ -128,12 +136,6 @@ public class AopHelper {
                 proxyMap.put(proxyClass, targetClassSet);
             }
         }
-    }
-
-    private static void addAspectProxy(Map<Class<?>, Set<Class<?>>> proxyMap) {
-        Set<Class<?>> serviceClassSet = ClassHelper.getClassSetByAnnotation(Service.class);
-        proxyMap.put(TransactionProxy.class, serviceClassSet);
-
     }
 }
 
