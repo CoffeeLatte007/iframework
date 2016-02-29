@@ -17,11 +17,11 @@ import java.util.Map;
 public final class IocHelper {
     static {
         Map<Class<?>,Object> beanMap=BeanHelper.getBeanMap();
-        if(CollectionUtil.isNotEmpty(beanMap)){
-            //遍历BeanMap
-            for(Map.Entry<Class<?>,Object> beanEntry :beanMap.entrySet()){
-                //从BeanMap得到Bean类和Bean实例
-                Class<?> beanClass =beanEntry.getKey();
+                if(CollectionUtil.isNotEmpty(beanMap)){
+                    //遍历BeanMap
+                    for(Map.Entry<Class<?>,Object> beanEntry :beanMap.entrySet()){
+                        //从BeanMap得到Bean类和Bean实例
+                        Class<?> beanClass =beanEntry.getKey();
                 Object beanInstance=beanEntry.getValue();
                 //获取Bean类定义的所有成员变量
                 Field[] beanFields=beanClass.getDeclaredFields();

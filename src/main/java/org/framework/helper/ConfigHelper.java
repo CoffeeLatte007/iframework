@@ -105,6 +105,14 @@ public final class ConfigHelper {
     public static int getAppUploadLimit() {
         return PropsUtil.getInt(CONFIG_PROPS,ConfigConstant.APP_UPLOAD_LIMIT,10);
     }
+
+    public static String getString(String realms) {
+        return PropsUtil.getString(CONFIG_PROPS,realms);
+    }
+
+    public static boolean getBoolean(String cache) {
+        return PropsUtil.getBoolean(CONFIG_PROPS,cache);
+    }
 }
 
 

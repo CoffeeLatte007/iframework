@@ -2,27 +2,27 @@ package org.framework.helper;
 
 //~--- non-JDK imports --------------------------------------------------------
 
-
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanHandler;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.*;
+
 import org.framework.util.CollectionUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//~--- JDK imports ------------------------------------------------------------
+
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
-//~--- JDK imports ------------------------------------------------------------
+import java.sql.Statement;
+import java.util.*;
 
 /**
  * 数据库助手类
@@ -35,15 +35,14 @@ public final class DatabaseHelper {
 
     static {
         CONNECTION_HOLDER = new ThreadLocal<Connection>();
-
-        QUERY_RUNNER = new QueryRunner();
-
-        DATA_SOURCE = new BasicDataSource();
+        QUERY_RUNNER      = new QueryRunner();
+        DATA_SOURCE       = new BasicDataSource();
         DATA_SOURCE.setDriverClassName(ConfigHelper.getJdbcDriver());
         DATA_SOURCE.setUrl(ConfigHelper.getJdbcUrl());
         DATA_SOURCE.setUsername(ConfigHelper.getJdbcUserName());
         DATA_SOURCE.setPassword(ConfigHelper.getJdbcPassword());
     }
+
 
     /**
      * 获取数据库连接
@@ -249,7 +248,6 @@ public final class DatabaseHelper {
      */
     public static <T> boolean deleteEntity(Class<T> entityClass, long id) {
         String sql = "DELETE FROM " + getTableName(entityClass) + " WHERE id = ?";
-
         return executeUpdate(sql, id) == 1;
     }
 
@@ -332,8 +330,15 @@ public final class DatabaseHelper {
             }
         }
     }
-    public static void rollbackTransaction(){
-        Connection conn=getConnection();
+
+    /**
+     * author：Lizhao
+     * Date:16/01/06
+     * version:1.0
+     */
+    public static void rollbackTransaction() {
+        Connection conn = getConnection();
+
         if (conn != null) {
             try {
                 conn.rollback();
@@ -346,6 +351,84 @@ public final class DatabaseHelper {
                 CONNECTION_HOLDER.remove();
             }
         }
+    }
+
+    /**
+     * 查询并返回单个列的值
+     * author：Lizhao
+     * Date:16/01/06
+     * version:1.0
+     *
+     * @param sql
+     * @param params
+     * @param <T>
+     *
+     * @return
+     */
+    public static <T> T query(String sql, Object... params) {
+        T obj;
+
+        try {
+            Connection conn = getConnection();
+
+            obj = QUERY_RUNNER.query(conn, sql, new ScalarHandler<T>(), params);
+        } catch (SQLException e) {
+            LOGGER.error("query failure", e);
+
+            throw new RuntimeException(e);
+        }
+
+        return obj;
+    }
+
+    /**
+     * 查询返回多个列值且唯一性，用Set不用distinct
+     * author：Lizhao
+     * Date:16/01/06
+     * version:1.0
+     *
+     * @param sql
+     * @param params
+     * @param <T>
+     *
+     * @return
+     */
+    public static <T> Set<T> querySet(String sql, Object... params) {
+        Collection<T> valueList = queryList(sql, params);
+
+        return new LinkedHashSet<T>(valueList);
+    }
+
+    /**
+     * 查询并返回多个列值
+     * author：Lizhao
+     * Date:16/01/06
+     * version:1.0
+     *
+     * @param sql
+     * @param params
+     * @param <T>
+     *
+     * @return
+     */
+    private static <T> Collection<T> queryList(String sql, Object... params) {
+        List<T> list;
+
+        try {
+            Connection conn = getConnection();
+
+            list = QUERY_RUNNER.query(conn, sql, new ColumnListHandler<T>(), params);
+        } catch (SQLException e) {
+            LOGGER.error("query list failure", e);
+
+            throw new RuntimeException(e);
+        }
+
+        return list;
+    }
+
+    public static DataSource getDataSource() {
+        return DATA_SOURCE;
     }
 }
 

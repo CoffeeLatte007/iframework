@@ -2,11 +2,13 @@ package org.framework.util;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import java.awt.font.GlyphVector;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -61,6 +63,10 @@ public final class CodeUtil {
             throw new RuntimeException(e);
         }
         return target;
+    }
+
+    public static String  md5(String submitted) {
+        return DigestUtils.md5Hex(submitted);
     }
 }
 

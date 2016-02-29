@@ -2,6 +2,7 @@ package org.framework.util;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import net.sf.cglib.core.ReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,6 @@ public final class ClassUtil {
      * @return
      */
     public static ClassLoader getClassloader() {
-
         return Thread.currentThread().getContextClassLoader();
     }
 
@@ -64,7 +64,9 @@ public final class ClassUtil {
 
         return cls;
     }
-
+    public static Class<?> loadClass(String className) {
+        return loadClass(className, true);
+    }
     /**
      * 对于制定包名的加载类
      * author：Lizhao

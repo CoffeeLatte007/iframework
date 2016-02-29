@@ -40,10 +40,10 @@ public class TransactionProxy implements Proxy {
                 throw e;
             }
             finally {
-                FLAG_HOLDER.remove();
-            }
+            FLAG_HOLDER.remove();
         }
-        else {
+    }
+    else {
             result=proxyChain.doProxyChain();
         }
         return result;

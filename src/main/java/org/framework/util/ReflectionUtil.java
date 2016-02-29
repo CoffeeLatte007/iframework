@@ -90,6 +90,11 @@ public final class ReflectionUtil {
             throw new RuntimeException(e);
         }
     }
+
+    public static Object newInstance(String className) {
+        Class<?> cls=ClassUtil.loadClass(className);
+        return newInstance(cls);
+    }
 }
 
 
