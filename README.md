@@ -4,12 +4,15 @@
 AOP框架的实现：
 http://blog.csdn.net/li563868273/article/details/50764650
 
+jackson和fastjson速度对比blog分析
+http://blog.csdn.net/li563868273/article/details/52010695
 
 如何对于给定包名获取所有类：
 http://blog.csdn.net/li563868273/article/details/50764652
 
 shiro的学习：
 http://jinnianshilongnian.iteye.com/blog/2018398
+
 ##使用说明：
 首先把该源码下载下来，和需要使用框架的项目放在一个项目下面，不同Moudle。
 直接使用Maven在需要使用框架的项目上：
