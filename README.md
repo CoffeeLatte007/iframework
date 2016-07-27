@@ -62,7 +62,7 @@ http://jinnianshilongnian.iteye.com/blog/2018398
 ##初始化
 1.如果使用的是servlet3.0(推荐)，这里直接会初始化，因为在我们的DispatcherServlet中已经使用注解配置。
 
-2.如果非要使用Servlet3.0以下(强烈不推荐)，可以使用xml配置：
+2.如果非要使用Servlet3.0以下(非常强烈不推荐)，可以使用xml配置：
 
     <servlet>
         <servlet-name>DispatcherServlet</servlet-name>
